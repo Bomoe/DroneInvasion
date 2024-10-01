@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://bo47dimcjmkrn"]
+
+[ext_resource type="Script" path="res://player/player.gd" id="1_78nm6"]
+[ext_resource type="Texture2D" uid="uid://b65h10h0p2pc" path="res://player/art/player_1.png" id="2_srkak"]
+[ext_resource type="Texture2D" uid="uid://dswoecadvayci" path="res://player/art/player_2.png" id="3_80mc8"]
+[ext_resource type="Texture2D" uid="uid://du62d0vvh0fdi" path="res://player/art/player_3.png" id="4_pl8yt"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ve1na"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_srkak")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_80mc8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_pl8yt")
+}],
+"loop": true,
+"name": &"default",
+"speed": 20.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1sr7m"]
+size = Vector2(171.667, 245)
+
+[node name="Player" type="Area2D" groups=["player"]]
+position = Vector2(620, 336)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_78nm6")
+metadata/_edit_group_ = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+rotation = -1.5708
+scale = Vector2(0.3, 0.3)
+sprite_frames = SubResource("SpriteFrames_ve1na")
+frame_progress = 0.335915
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["player"]]
+light_mask = 3
+visibility_layer = 3
+position = Vector2(-0.5, -0.5)
+scale = Vector2(0.6, 0.6)
+shape = SubResource("RectangleShape2D_1sr7m")
+
+[node name="FireTimer" type="Timer" parent="."]
+wait_time = 0.25
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="FireTimer" to="." method="on_fire_timer_reset"]
