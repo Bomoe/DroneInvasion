@@ -10,9 +10,9 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	var player = get_tree().get_nodes_in_group("player")[0]
-	if player: 
+	if player and player.is_visible_in_tree(): 
 		var direction = (player.position - position).normalized()
-		position += direction * GlobalSettings.enemy_speed * delta
+		position += direction * GlobalSettings.current_enemy_speed * delta
 		look_at(player.position)
 
 func _on_body_shape_entered(body_rid: RID, body: Node, body_shape_index: int, local_shape_index: int) -> void:
@@ -24,6 +24,4 @@ func _on_visible_on_screen_notifier_2d_screen_exited():
 	queue_free()
 
 func _on_increase_speed():
-	print("Speed increased from: ", GlobalSettings.enemy_speed)
-	GlobalSettings.enemy_speed += 10
-	print("Speed increased to: ", GlobalSettings.enemy_speed)
+	GlobalSettings.current_enemy_speed += 10

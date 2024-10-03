@@ -1,9 +1,9 @@
 extends Node
 
 @export var enemy_scene: PackedScene
-var score
 var total_kills = 0
 var enemies = []
+var time_elapsed = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -14,22 +14,36 @@ func _ready():
 func _process(delta: float) -> void:
 	pass
 
-
 func game_over():
-	$ScoreTimer.stop()
-	$EnemyTimer.stop()
+	toggle_is_game_over(true)
 
 func new_game():
-	score = 0
+	get_tree().call_group("enemy", "queue_free")
+	toggle_is_game_over(false)
+	total_kills = 0
+	time_elapsed = 0
+	$KillCountLabel.text = "0 Enemies Killed"
+	$TimeElapsedLabel.text = "00:00:00"
+	$HealthLabel.text = "%s Lives Left" % $Player.max_health
 	$Player.start($StartPos.position)
 	$StartTimer.start()
+	GlobalSettings.current_enemy_speed = GlobalSettings.max_enemy_speed
 
-func _on_score_timer_timeout():
-	score += 1
+func toggle_is_game_over(isGameOver):
+	if isGameOver:
+		$GameOverLabel.show()
+		$GameOverPanel.show()
+		$TryAgainButton.show()
+		$TimeElapsedTimer.stop()
+		$EnemyTimer.stop()
+	else:
+		$GameOverLabel.hide()
+		$GameOverPanel.hide()
+		$TryAgainButton.hide()
 
 func _on_start_timer_timeout():
 	$EnemyTimer.start()
-	$ScoreTimer.start()
+	$TimeElapsedTimer.start()
 
 func _on_enemy_timer_timeout():
 	# Create a new instance of the enemy scene.
@@ -63,5 +77,22 @@ func _on_enemy_killed():
 		var enemy_to_call = enemies[0]
 		enemy_to_call.call("_on_increase_speed")
 		$EnemyTimer.wait_time -= 0.10
-	print("Killed enemy, new total: ", total_kills)
-	print ("New Enemy Timer wait time: ", $EnemyTimer.wait_time)
+	$KillCountLabel.text = "%s Enemies Killed" % total_kills
+
+func _on_player_life_lost(newHealth) -> void:
+	if newHealth >= 0:
+		$HealthLabel.text = "%s Lives Left" % newHealth
+	else:
+		game_over()
+
+
+func _on_time_elapsed_timer_timeout() -> void:
+	time_elapsed += 1
+	var hours = time_elapsed / 3600
+	var minutes = (time_elapsed % 3600) / 60
+	var seconds = time_elapsed % 60
+	$TimeElapsedLabel.text = "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+
+func _on_try_again_button_pressed() -> void:
+	new_game()
