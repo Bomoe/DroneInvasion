@@ -48,9 +48,5 @@ shape = SubResource("RectangleShape2D_1sr7m")
 [node name="FireTimer" type="Timer" parent="."]
 wait_time = 0.25
 
-[node name="InvulnTimer" type="Timer" parent="."]
-wait_time = 3.0
-
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="FireTimer" to="." method="on_fire_timer_reset"]
-[connection signal="timeout" from="InvulnTimer" to="." method="_on_invuln_timer_timeout"]
